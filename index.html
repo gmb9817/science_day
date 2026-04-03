@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>마찰보상 체험</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Friction Compensation Demo</p>
+        <h1>마찰보상 체험</h1>
+        <p class="hero-copy">
+          정지 상태에서는 더 큰 힘이 필요합니다. 마찰보상을 적용했을 때 목표 위치 오차가 어떻게 줄어드는지 직접 확인해보세요.
+        </p>
+      </div>
+      <div class="hero-badges">
+        <span class="badge">정적 웹</span>
+        <span class="badge">GitHub Pages 배포용</span>
+        <span class="badge">비교 실험 포함</span>
+      </div>
+    </header>
+
+    <nav class="mode-tabs" aria-label="모드 선택">
+      <button class="tab is-active" data-mode="basic">기초</button>
+      <button class="tab" data-mode="compare">비교</button>
+      <button class="tab" data-mode="advanced">심화</button>
+    </nav>
+
+    <section class="grid-layout">
+      <aside class="card controls-card">
+        <div class="card-head">
+          <h2>실험 설정</h2>
+          <button id="resetAllButton" class="ghost-button">전체 초기화</button>
+        </div>
+
+        <div class="control-group">
+          <label class="switch-row" for="compToggle">
+            <div>
+              <span class="control-title">마찰보상 적용</span>
+              <span class="control-hint">기초 모드에서 현재 실험에 바로 반영됩니다.</span>
+            </div>
+            <input id="compToggle" type="checkbox" checked>
+          </label>
+        </div>
+
+        <div class="control-group">
+          <label for="targetAngle">목표 각도</label>
+          <input id="targetAngle" type="range" min="20" max="180" step="1" value="90">
+          <div class="value-row"><span>현재값</span><strong id="targetAngleValue">90°</strong></div>
+        </div>
+
+        <div class="control-group">
+          <label for="controlGain">제어 강도</label>
+          <input id="controlGain" type="range" min="0.4" max="3.2" step="0.1" value="1.4">
+          <div class="value-row"><span>현재값</span><strong id="controlGainValue">1.4</strong></div>
+        </div>
+
+        <div class="control-group">
+          <label for="staticFriction">정지마찰</label>
+          <input id="staticFriction" type="range" min="2" max="12" step="0.1" value="6.5">
+          <div class="value-row"><span>현재값</span><strong id="staticFrictionValue">6.5</strong></div>
+        </div>
+
+        <div class="control-group">
+          <label for="kineticFriction">운동마찰</label>
+          <input id="kineticFriction" type="range" min="1" max="10" step="0.1" value="3.8">
+          <div class="value-row"><span>현재값</span><strong id="kineticFrictionValue">3.8</strong></div>
+        </div>
+
+        <div class="control-group advanced-only">
+          <label for="compensationValue">보상값</label>
+          <input id="compensationValue" type="range" min="0" max="10" step="0.1" value="4.2">
+          <div class="value-row"><span>현재값</span><strong id="compensationValueValue">4.2</strong></div>
+        </div>
+
+        <div class="control-group advanced-only">
+          <label class="switch-row" for="speedFrictionToggle">
+            <div>
+              <span class="control-title">속도 의존 마찰</span>
+              <span class="control-hint">심화 모드에서만 반영됩니다.</span>
+            </div>
+            <input id="speedFrictionToggle" type="checkbox" checked>
+          </label>
+        </div>
+
+        <div class="control-group advanced-only">
+          <label class="switch-row" for="positionFrictionToggle">
+            <div>
+              <span class="control-title">위치 의존 마찰</span>
+              <span class="control-hint">회전 위치에 따라 마찰 크기가 달라집니다.</span>
+            </div>
+            <input id="positionFrictionToggle" type="checkbox">
+          </label>
+        </div>
+
+        <div class="button-row">
+          <button id="runButton" class="primary-button">실험 시작</button>
+          <button id="pauseButton" class="secondary-button">일시정지</button>
+          <button id="resetButton" class="ghost-button">현재 모드 초기화</button>
+        </div>
+      </aside>
+
+      <main class="content-stack">
+        <section class="card simulation-card" id="basicPanel">
+          <div class="card-head">
+            <div>
+              <h2>실시간 시뮬레이션</h2>
+              <p>모터가 목표 각도로 이동하는 과정을 확인하세요.</p>
+            </div>
+            <span class="status-pill" id="runStatus">대기 중</span>
+          </div>
+
+          <div class="single-sim-layout">
+            <div class="canvas-wrap">
+              <canvas id="mainCanvas" width="760" height="340"></canvas>
+            </div>
+            <div class="metrics-grid">
+              <article class="metric-box">
+                <span>목표 각도</span>
+                <strong id="mainTargetMetric">90°</strong>
+              </article>
+              <article class="metric-box">
+                <span>실제 각도</span>
+                <strong id="mainAngleMetric">0.0°</strong>
+              </article>
+              <article class="metric-box">
+                <span>오차</span>
+                <strong id="mainErrorMetric">90.0°</strong>
+              </article>
+              <article class="metric-box">
+                <span>현재 속도</span>
+                <strong id="mainVelocityMetric">0.0°/s</strong>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="card compare-card hidden" id="comparePanel">
+          <div class="card-head">
+            <div>
+              <h2>보상 전후 비교</h2>
+              <p>같은 조건에서 마찰보상 OFF와 ON 결과를 동시에 비교합니다.</p>
+            </div>
+            <button id="autoCompareButton" class="secondary-button">비교 다시 실행</button>
+          </div>
+
+          <div class="compare-layout">
+            <div class="compare-canvas-card">
+              <div class="compare-label-row">
+                <h3>보상 OFF</h3>
+                <span class="tiny-pill">기본 제어</span>
+              </div>
+              <canvas id="compareCanvasOff" width="360" height="260"></canvas>
+              <div class="compare-stats">
+                <span>실제 각도 <strong id="offAngleMetric">0.0°</strong></span>
+                <span>오차 <strong id="offErrorMetric">0.0°</strong></span>
+              </div>
+            </div>
+
+            <div class="compare-canvas-card">
+              <div class="compare-label-row">
+                <h3>보상 ON</h3>
+                <span class="tiny-pill accent">마찰보상</span>
+              </div>
+              <canvas id="compareCanvasOn" width="360" height="260"></canvas>
+              <div class="compare-stats">
+                <span>실제 각도 <strong id="onAngleMetric">0.0°</strong></span>
+                <span>오차 <strong id="onErrorMetric">0.0°</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-summary" id="compareSummary">
+            <div>
+              <span class="summary-label">오차 감소량</span>
+              <strong id="improvementMetric">0.0°</strong>
+            </div>
+            <div>
+              <span class="summary-label">감소 비율</span>
+              <strong id="improvementRateMetric">0%</strong>
+            </div>
+            <div>
+              <span class="summary-label">판정</span>
+              <strong id="verdictMetric">대기 중</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="card graph-card hidden" id="advancedPanel">
+          <div class="card-head">
+            <div>
+              <h2>그래프 분석</h2>
+              <p>시간에 따른 위치 변화와 제어 입력을 함께 확인할 수 있습니다.</p>
+            </div>
+          </div>
+          <div class="graph-wrap">
+            <canvas id="graphCanvas" width="760" height="300"></canvas>
+          </div>
+          <div class="legend-row">
+            <span><i class="legend-dot dot-primary"></i>실제 위치</span>
+            <span><i class="legend-dot dot-muted"></i>목표 위치</span>
+            <span><i class="legend-dot dot-accent"></i>제어 입력</span>
+          </div>
+        </section>
+
+        <section class="card info-card">
+          <div class="card-head">
+            <h2>설명</h2>
+          </div>
+          <div class="info-grid">
+            <article>
+              <h3>정지마찰</h3>
+              <p>정지 상태를 깨고 처음 움직이기 위해 필요한 힘입니다. 값이 크면 처음 출발이 더 어렵습니다.</p>
+            </article>
+            <article>
+              <h3>운동마찰</h3>
+              <p>이미 움직이는 동안 계속 작용하는 저항입니다. 정지마찰보다 작게 설정하면 출발 후 더 쉽게 움직입니다.</p>
+            </article>
+            <article>
+              <h3>마찰보상</h3>
+              <p>목표 방향으로 추가 힘을 주어 정지마찰 때문에 생기는 위치 오차를 줄이는 방법입니다.</p>
+            </article>
+          </div>
+        </section>
+      </main>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
