@@ -67,13 +67,6 @@ input {
   line-height: 1.7;
 }
 
-.hero-badges {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
 .badge,
 .tiny-pill,
 .status-pill {
@@ -238,8 +231,8 @@ input {
   margin-top: 22px;
 }
 
-.button-row .ghost-button {
-  grid-column: 1 / -1;
+.compact-buttons {
+  grid-template-columns: 1fr 1fr;
 }
 
 .primary-button,
@@ -270,7 +263,8 @@ input {
 .simulation-card,
 .compare-card,
 .graph-card,
-.info-card {
+.info-card,
+.run-launch-card {
   padding: 24px;
 }
 
@@ -393,6 +387,37 @@ input {
   font-size: 13px;
 }
 
+.run-launch-card {
+  position: sticky;
+  bottom: 16px;
+  z-index: 12;
+  padding: 18px 24px;
+}
+
+.run-launch-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.run-launch-inner h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.run-launch-inner p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.run-launch-button {
+  min-width: 180px;
+  padding-inline: 26px;
+}
+
 .legend-dot {
   display: inline-block;
   width: 10px;
@@ -418,6 +443,10 @@ input {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
+}
+
+.detailed-info-grid {
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .info-grid article {
@@ -455,8 +484,22 @@ input {
   .metrics-grid,
   .result-summary,
   .info-grid,
+  .detailed-info-grid,
   .compare-layout {
     grid-template-columns: 1fr;
+  }
+
+  .run-launch-card {
+    position: static;
+  }
+
+  .run-launch-inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .run-launch-button {
+    width: 100%;
   }
 }
 
@@ -484,7 +527,8 @@ input {
   .compare-card,
   .graph-card,
   .info-card,
-  .controls-card {
+  .controls-card,
+  .run-launch-card {
     padding: 18px;
   }
 }

@@ -13,16 +13,11 @@
   <div class="page-shell">
     <header class="hero">
       <div>
-        <p class="eyebrow">Friction Compensation Demo</p>
+        <p class="eyebrow">마찰과 제어</p>
         <h1>마찰보상 체험</h1>
         <p class="hero-copy">
-          정지 상태에서는 더 큰 힘이 필요합니다. 마찰보상을 적용했을 때 목표 위치 오차가 어떻게 줄어드는지 직접 확인해보세요.
+          정지 상태에서는 출발에 더 큰 힘이 필요합니다. 보상을 끄고 켰을 때 목표 각도에 얼마나 가까워지는지 직접 확인해보세요.
         </p>
-      </div>
-      <div class="hero-badges">
-        <span class="badge">정적 웹</span>
-        <span class="badge">GitHub Pages 배포용</span>
-        <span class="badge">비교 실험 포함</span>
       </div>
     </header>
 
@@ -99,8 +94,7 @@
           </label>
         </div>
 
-        <div class="button-row">
-          <button id="runButton" class="primary-button">실험 시작</button>
+        <div class="button-row compact-buttons">
           <button id="pauseButton" class="secondary-button">일시정지</button>
           <button id="resetButton" class="ghost-button">현재 모드 초기화</button>
         </div>
@@ -209,22 +203,36 @@
           </div>
         </section>
 
+        <section class="card run-launch-card">
+          <div class="run-launch-inner">
+            <div>
+              <h2>실험 실행</h2>
+              <p>설정을 바꾼 뒤 버튼을 누르면 현재 조건으로 다시 시작됩니다.</p>
+            </div>
+            <button id="runButton" class="primary-button run-launch-button">실험 시작</button>
+          </div>
+        </section>
+
         <section class="card info-card">
           <div class="card-head">
-            <h2>설명</h2>
+            <h2>실험 안내</h2>
           </div>
-          <div class="info-grid">
+          <div class="info-grid detailed-info-grid">
             <article>
-              <h3>정지마찰</h3>
-              <p>정지 상태를 깨고 처음 움직이기 위해 필요한 힘입니다. 값이 크면 처음 출발이 더 어렵습니다.</p>
+              <h3>왜 처음에 잘 안 움직일까</h3>
+              <p>정지 상태에서는 정지마찰이 먼저 버티기 때문에 제어 입력이 어느 정도 커지기 전까지는 각도가 거의 변하지 않습니다. 정지마찰 값을 높이면 이 현상이 더 분명하게 나타납니다.</p>
             </article>
             <article>
-              <h3>운동마찰</h3>
-              <p>이미 움직이는 동안 계속 작용하는 저항입니다. 정지마찰보다 작게 설정하면 출발 후 더 쉽게 움직입니다.</p>
+              <h3>보상을 끄면 어떤 일이 생길까</h3>
+              <p>목표 각도까지 가기 직전 제어 입력이 약해지면 정지마찰을 다시 넘지 못해 중간에서 멈출 수 있습니다. 이때 실제 각도와 목표 각도 사이에 오차가 남습니다.</p>
             </article>
             <article>
-              <h3>마찰보상</h3>
-              <p>목표 방향으로 추가 힘을 주어 정지마찰 때문에 생기는 위치 오차를 줄이는 방법입니다.</p>
+              <h3>보상을 켜면 무엇이 달라질까</h3>
+              <p>멈추기 쉬운 구간에서 목표 방향으로 힘을 조금 더 보태 주기 때문에 다시 움직일 가능성이 커집니다. 같은 설정에서도 보상 ON이 OFF보다 목표 각도에 더 가깝게 도달하는지 확인할 수 있습니다.</p>
+            </article>
+            <article>
+              <h3>슬라이더를 이렇게 보면 된다</h3>
+              <p>제어 강도는 기본적으로 얼마나 세게 움직이게 할지, 정지마찰과 운동마찰은 출발 전후 저항 차이를, 보상값은 멈추려는 순간 얼마나 더 밀어줄지를 뜻합니다. 값을 바꾼 뒤 결과 카드의 실제 각도와 오차를 비교해 보세요.</p>
             </article>
           </div>
         </section>
